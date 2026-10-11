@@ -7,7 +7,8 @@ Project rules for AI agents working in this repository. Read this fully before m
 The XA Bank Time Deposit refactoring kata (see `README.md` for the full brief). The goal is to expose the existing
 domain logic through a REST API backed by a database, **without changing the behaviour of the existing calculator**.
 
-- Language: Java 17 (Maven). All code lives in `java/`.
+- Stack: Java 17, Maven, Spring Boot 4.1 (Spring MVC, Spring Data JPA / Hibernate 7), PostgreSQL,
+  Testcontainers 2. All code lives in `java/`.
 - Package root: `org.ikigaidigital`.
 
 ## Commands
@@ -15,8 +16,8 @@ domain logic through a REST API backed by a database, **without changing the beh
 Run from `java/`:
 
 ```bash
-mvn -q test            # unit tests (must pass before every commit)
-mvn -q verify          # full build incl. integration tests (Testcontainers needs Docker running)
+mvn -q test            # unit tests, *Test classes (must pass before every commit)
+mvn -q verify          # + integration tests, *IT classes via Failsafe (Testcontainers needs Docker running)
 ```
 
 ## Hard constraints (never violate)
@@ -47,9 +48,9 @@ mvn -q verify          # full build incl. integration tests (Testcontainers need
 
 ## Coding conventions
 
-- SOLID, small classes, intention-revealing names, no dead code, no commented-out code.
+- SOLID, small classes, intention-revealing names, no dead code, no commented-out code, no commented properties, no commented dependencies.
 - Use `BigDecimal` for new money code, but convert at the boundary so `updateBalance` behaviour stays identical.
-- Where the brief is ambiguous, make a decision and **justify it in a short code comment** (`// Assumption: ...`).
+- Where the brief is ambiguous, ask and do not make assumptions without approval.
 - Tests: JUnit 5 + AssertJ. Unit tests for domain logic; Testcontainers (PostgreSQL) for persistence and API
   integration tests. Test names describe behaviour (`shouldNotApplyInterestToStudentPlanAfterOneYear`).
 

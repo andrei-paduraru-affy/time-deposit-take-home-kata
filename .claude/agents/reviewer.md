@@ -22,7 +22,7 @@ Check, in priority order:
    OpenAPI contract and controllers in sync, interest rules extensible without editing a conditional.
 4. **Tests** — behaviour changes covered, characterization tests present before refactors, Testcontainers used for
    adapters.
-5. **Clean code** — naming, design patterns, SOLID, duplication, dead code, unjustified assumptions (should have a comment).
+5. **Clean code** — naming, design patterns, SOLID, duplication, dead code, no comments explaining code, no commented properties, no commented dependencies, no magic numbers.
 
 ## Output
 
