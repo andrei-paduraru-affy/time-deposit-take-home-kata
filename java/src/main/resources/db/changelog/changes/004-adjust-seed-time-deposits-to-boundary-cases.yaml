@@ -1,0 +1,21 @@
+databaseChangeLog:
+  - changeSet:
+      id: 004-adjust-seed-time-deposits-to-boundary-cases
+      author: andrei.paduraru
+      contextFilter: seed
+      changes:
+        - update:
+            tableName: time_deposits
+            columns:
+              - column: {name: days, valueNumeric: 29}
+            where: plan_type = 'STUDENT' AND days = 20 AND balance = 500.00
+        - update:
+            tableName: time_deposits
+            columns:
+              - column: {name: days, valueNumeric: 399}
+            where: plan_type = 'STUDENT' AND days = 400 AND balance = 3000.00
+        - update:
+            tableName: time_deposits
+            columns:
+              - column: {name: days, valueNumeric: 44}
+            where: plan_type = 'PREMIUM' AND days = 40 AND balance = 5000.00

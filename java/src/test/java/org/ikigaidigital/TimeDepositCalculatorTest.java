@@ -120,6 +120,52 @@ class TimeDepositCalculatorTest {
   }
 
   @Test
+  void shouldKeepApplyingPremiumInterestEveryMonthOnceItHasStarted() {
+    var deposit = new TimeDeposit(1, "premium", BALANCE, 46);
+
+    calculator.updateBalance(List.of(deposit));
+    assertThat(deposit.getBalance()).isEqualTo(1004.17);
+    calculator.updateBalance(List.of(deposit));
+    assertThat(deposit.getBalance()).isEqualTo(1008.3499999999999);
+    calculator.updateBalance(List.of(deposit));
+    assertThat(deposit.getBalance()).isEqualTo(1012.55);
+  }
+
+  @Test
+  void shouldNeverApplyPremiumInterestWhileStillWithin45Days() {
+    var deposit = new TimeDeposit(1, "premium", BALANCE, 45);
+
+    calculator.updateBalance(List.of(deposit));
+    calculator.updateBalance(List.of(deposit));
+    calculator.updateBalance(List.of(deposit));
+
+    assertThat(deposit.getBalance()).isEqualTo(BALANCE);
+  }
+
+  @Test
+  void shouldKeepApplyingStudentInterestEveryMonthWhileWithinTheFirstYear() {
+    var deposit = new TimeDeposit(1, "student", BALANCE, 365);
+
+    calculator.updateBalance(List.of(deposit));
+    assertThat(deposit.getBalance()).isEqualTo(1002.5);
+    calculator.updateBalance(List.of(deposit));
+    assertThat(deposit.getBalance()).isEqualTo(1005.01);
+    calculator.updateBalance(List.of(deposit));
+    assertThat(deposit.getBalance()).isEqualTo(1007.52);
+  }
+
+  @Test
+  void shouldNeverApplyStudentInterestOnceTheFirstYearHasPassed() {
+    var deposit = new TimeDeposit(1, "student", BALANCE, 366);
+
+    calculator.updateBalance(List.of(deposit));
+    calculator.updateBalance(List.of(deposit));
+    calculator.updateBalance(List.of(deposit));
+
+    assertThat(deposit.getBalance()).isEqualTo(BALANCE);
+  }
+
+  @Test
   void shouldAcceptEmptyList() {
     assertThatCode(() -> calculator.updateBalance(List.of())).doesNotThrowAnyException();
   }

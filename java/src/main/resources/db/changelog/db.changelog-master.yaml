@@ -8,3 +8,6 @@ databaseChangeLog:
   - include:
       file: changes/003-seed-time-deposits-and-withdrawals.yaml
       relativeToChangelogFile: true
+  - include:
+      file: changes/004-adjust-seed-time-deposits-to-boundary-cases.yaml
+      relativeToChangelogFile: true
