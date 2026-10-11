@@ -1,0 +1,228 @@
+databaseChangeLog:
+  - changeSet:
+      id: 003-seed-time-deposits
+      author: andrei.paduraru
+      contextFilter: seed
+      changes:
+        - insert:
+            tableName: time_deposits
+            columns:
+              - column: {name: plan_type, value: BASIC}
+              - column: {name: days, valueNumeric: 15}
+              - column: {name: balance, valueNumeric: 1000.00}
+        - insert:
+            tableName: time_deposits
+            columns:
+              - column: {name: plan_type, value: BASIC}
+              - column: {name: days, valueNumeric: 45}
+              - column: {name: balance, valueNumeric: 2500.00}
+        - insert:
+            tableName: time_deposits
+            columns:
+              - column: {name: plan_type, value: BASIC}
+              - column: {name: days, valueNumeric: 200}
+              - column: {name: balance, valueNumeric: 10000.00}
+        - insert:
+            tableName: time_deposits
+            columns:
+              - column: {name: plan_type, value: STUDENT}
+              - column: {name: days, valueNumeric: 20}
+              - column: {name: balance, valueNumeric: 500.00}
+        - insert:
+            tableName: time_deposits
+            columns:
+              - column: {name: plan_type, value: STUDENT}
+              - column: {name: days, valueNumeric: 180}
+              - column: {name: balance, valueNumeric: 1500.00}
+        - insert:
+            tableName: time_deposits
+            columns:
+              - column: {name: plan_type, value: STUDENT}
+              - column: {name: days, valueNumeric: 400}
+              - column: {name: balance, valueNumeric: 3000.00}
+        - insert:
+            tableName: time_deposits
+            columns:
+              - column: {name: plan_type, value: PREMIUM}
+              - column: {name: days, valueNumeric: 40}
+              - column: {name: balance, valueNumeric: 5000.00}
+        - insert:
+            tableName: time_deposits
+            columns:
+              - column: {name: plan_type, value: PREMIUM}
+              - column: {name: days, valueNumeric: 90}
+              - column: {name: balance, valueNumeric: 12000.00}
+        - insert:
+            tableName: time_deposits
+            columns:
+              - column: {name: plan_type, value: PREMIUM}
+              - column: {name: days, valueNumeric: 365}
+              - column: {name: balance, valueNumeric: 25000.00}
+
+  - changeSet:
+      id: 003-seed-withdrawals
+      author: andrei.paduraru
+      contextFilter: seed
+      changes:
+        - insert:
+            tableName: withdrawals
+            columns:
+              - column: {name: time_deposit_id, valueComputed: "(SELECT id FROM time_deposits WHERE plan_type = 'BASIC' AND days = 15 AND balance = 1000.00)"}
+              - column: {name: amount, valueNumeric: 100.00}
+              - column: {name: date, valueDate: "2026-06-01T09:00:00"}
+        - insert:
+            tableName: withdrawals
+            columns:
+              - column: {name: time_deposit_id, valueComputed: "(SELECT id FROM time_deposits WHERE plan_type = 'BASIC' AND days = 15 AND balance = 1000.00)"}
+              - column: {name: amount, valueNumeric: 50.00}
+              - column: {name: date, valueDate: "2026-07-15T14:30:00"}
+        - insert:
+            tableName: withdrawals
+            columns:
+              - column: {name: time_deposit_id, valueComputed: "(SELECT id FROM time_deposits WHERE plan_type = 'BASIC' AND days = 15 AND balance = 1000.00)"}
+              - column: {name: amount, valueNumeric: 25.00}
+              - column: {name: date, valueDate: "2026-08-20T11:15:00"}
+        - insert:
+            tableName: withdrawals
+            columns:
+              - column: {name: time_deposit_id, valueComputed: "(SELECT id FROM time_deposits WHERE plan_type = 'BASIC' AND days = 45 AND balance = 2500.00)"}
+              - column: {name: amount, valueNumeric: 200.00}
+              - column: {name: date, valueDate: "2026-05-10T10:00:00"}
+        - insert:
+            tableName: withdrawals
+            columns:
+              - column: {name: time_deposit_id, valueComputed: "(SELECT id FROM time_deposits WHERE plan_type = 'BASIC' AND days = 45 AND balance = 2500.00)"}
+              - column: {name: amount, valueNumeric: 120.50}
+              - column: {name: date, valueDate: "2026-07-02T16:45:00"}
+        - insert:
+            tableName: withdrawals
+            columns:
+              - column: {name: time_deposit_id, valueComputed: "(SELECT id FROM time_deposits WHERE plan_type = 'BASIC' AND days = 45 AND balance = 2500.00)"}
+              - column: {name: amount, valueNumeric: 75.00}
+              - column: {name: date, valueDate: "2026-09-01T08:30:00"}
+        - insert:
+            tableName: withdrawals
+            columns:
+              - column: {name: time_deposit_id, valueComputed: "(SELECT id FROM time_deposits WHERE plan_type = 'BASIC' AND days = 200 AND balance = 10000.00)"}
+              - column: {name: amount, valueNumeric: 1000.00}
+              - column: {name: date, valueDate: "2026-03-05T12:00:00"}
+        - insert:
+            tableName: withdrawals
+            columns:
+              - column: {name: time_deposit_id, valueComputed: "(SELECT id FROM time_deposits WHERE plan_type = 'BASIC' AND days = 200 AND balance = 10000.00)"}
+              - column: {name: amount, valueNumeric: 500.00}
+              - column: {name: date, valueDate: "2026-05-18T09:20:00"}
+        - insert:
+            tableName: withdrawals
+            columns:
+              - column: {name: time_deposit_id, valueComputed: "(SELECT id FROM time_deposits WHERE plan_type = 'BASIC' AND days = 200 AND balance = 10000.00)"}
+              - column: {name: amount, valueNumeric: 250.75}
+              - column: {name: date, valueDate: "2026-08-30T15:10:00"}
+        - insert:
+            tableName: withdrawals
+            columns:
+              - column: {name: time_deposit_id, valueComputed: "(SELECT id FROM time_deposits WHERE plan_type = 'STUDENT' AND days = 20 AND balance = 500.00)"}
+              - column: {name: amount, valueNumeric: 40.00}
+              - column: {name: date, valueDate: "2026-06-12T13:00:00"}
+        - insert:
+            tableName: withdrawals
+            columns:
+              - column: {name: time_deposit_id, valueComputed: "(SELECT id FROM time_deposits WHERE plan_type = 'STUDENT' AND days = 20 AND balance = 500.00)"}
+              - column: {name: amount, valueNumeric: 15.00}
+              - column: {name: date, valueDate: "2026-07-01T10:30:00"}
+        - insert:
+            tableName: withdrawals
+            columns:
+              - column: {name: time_deposit_id, valueComputed: "(SELECT id FROM time_deposits WHERE plan_type = 'STUDENT' AND days = 20 AND balance = 500.00)"}
+              - column: {name: amount, valueNumeric: 10.25}
+              - column: {name: date, valueDate: "2026-09-10T17:00:00"}
+        - insert:
+            tableName: withdrawals
+            columns:
+              - column: {name: time_deposit_id, valueComputed: "(SELECT id FROM time_deposits WHERE plan_type = 'STUDENT' AND days = 180 AND balance = 1500.00)"}
+              - column: {name: amount, valueNumeric: 150.00}
+              - column: {name: date, valueDate: "2026-04-22T11:00:00"}
+        - insert:
+            tableName: withdrawals
+            columns:
+              - column: {name: time_deposit_id, valueComputed: "(SELECT id FROM time_deposits WHERE plan_type = 'STUDENT' AND days = 180 AND balance = 1500.00)"}
+              - column: {name: amount, valueNumeric: 90.00}
+              - column: {name: date, valueDate: "2026-06-30T09:45:00"}
+        - insert:
+            tableName: withdrawals
+            columns:
+              - column: {name: time_deposit_id, valueComputed: "(SELECT id FROM time_deposits WHERE plan_type = 'STUDENT' AND days = 180 AND balance = 1500.00)"}
+              - column: {name: amount, valueNumeric: 60.50}
+              - column: {name: date, valueDate: "2026-08-14T14:00:00"}
+        - insert:
+            tableName: withdrawals
+            columns:
+              - column: {name: time_deposit_id, valueComputed: "(SELECT id FROM time_deposits WHERE plan_type = 'STUDENT' AND days = 400 AND balance = 3000.00)"}
+              - column: {name: amount, valueNumeric: 300.00}
+              - column: {name: date, valueDate: "2026-01-15T10:15:00"}
+        - insert:
+            tableName: withdrawals
+            columns:
+              - column: {name: time_deposit_id, valueComputed: "(SELECT id FROM time_deposits WHERE plan_type = 'STUDENT' AND days = 400 AND balance = 3000.00)"}
+              - column: {name: amount, valueNumeric: 225.00}
+              - column: {name: date, valueDate: "2026-04-01T12:30:00"}
+        - insert:
+            tableName: withdrawals
+            columns:
+              - column: {name: time_deposit_id, valueComputed: "(SELECT id FROM time_deposits WHERE plan_type = 'STUDENT' AND days = 400 AND balance = 3000.00)"}
+              - column: {name: amount, valueNumeric: 100.00}
+              - column: {name: date, valueDate: "2026-07-25T16:20:00"}
+        - insert:
+            tableName: withdrawals
+            columns:
+              - column: {name: time_deposit_id, valueComputed: "(SELECT id FROM time_deposits WHERE plan_type = 'PREMIUM' AND days = 40 AND balance = 5000.00)"}
+              - column: {name: amount, valueNumeric: 500.00}
+              - column: {name: date, valueDate: "2026-06-05T09:00:00"}
+        - insert:
+            tableName: withdrawals
+            columns:
+              - column: {name: time_deposit_id, valueComputed: "(SELECT id FROM time_deposits WHERE plan_type = 'PREMIUM' AND days = 40 AND balance = 5000.00)"}
+              - column: {name: amount, valueNumeric: 250.00}
+              - column: {name: date, valueDate: "2026-07-20T13:40:00"}
+        - insert:
+            tableName: withdrawals
+            columns:
+              - column: {name: time_deposit_id, valueComputed: "(SELECT id FROM time_deposits WHERE plan_type = 'PREMIUM' AND days = 40 AND balance = 5000.00)"}
+              - column: {name: amount, valueNumeric: 125.00}
+              - column: {name: date, valueDate: "2026-09-15T10:10:00"}
+        - insert:
+            tableName: withdrawals
+            columns:
+              - column: {name: time_deposit_id, valueComputed: "(SELECT id FROM time_deposits WHERE plan_type = 'PREMIUM' AND days = 90 AND balance = 12000.00)"}
+              - column: {name: amount, valueNumeric: 1200.00}
+              - column: {name: date, valueDate: "2026-04-10T15:00:00"}
+        - insert:
+            tableName: withdrawals
+            columns:
+              - column: {name: time_deposit_id, valueComputed: "(SELECT id FROM time_deposits WHERE plan_type = 'PREMIUM' AND days = 90 AND balance = 12000.00)"}
+              - column: {name: amount, valueNumeric: 800.00}
+              - column: {name: date, valueDate: "2026-06-25T11:30:00"}
+        - insert:
+            tableName: withdrawals
+            columns:
+              - column: {name: time_deposit_id, valueComputed: "(SELECT id FROM time_deposits WHERE plan_type = 'PREMIUM' AND days = 90 AND balance = 12000.00)"}
+              - column: {name: amount, valueNumeric: 400.00}
+              - column: {name: date, valueDate: "2026-08-28T08:50:00"}
+        - insert:
+            tableName: withdrawals
+            columns:
+              - column: {name: time_deposit_id, valueComputed: "(SELECT id FROM time_deposits WHERE plan_type = 'PREMIUM' AND days = 365 AND balance = 25000.00)"}
+              - column: {name: amount, valueNumeric: 2500.00}
+              - column: {name: date, valueDate: "2026-02-14T10:00:00"}
+        - insert:
+            tableName: withdrawals
+            columns:
+              - column: {name: time_deposit_id, valueComputed: "(SELECT id FROM time_deposits WHERE plan_type = 'PREMIUM' AND days = 365 AND balance = 25000.00)"}
+              - column: {name: amount, valueNumeric: 1750.00}
+              - column: {name: date, valueDate: "2026-05-30T14:15:00"}
+        - insert:
+            tableName: withdrawals
+            columns:
+              - column: {name: time_deposit_id, valueComputed: "(SELECT id FROM time_deposits WHERE plan_type = 'PREMIUM' AND days = 365 AND balance = 25000.00)"}
+              - column: {name: amount, valueNumeric: 900.00}
+              - column: {name: date, valueDate: "2026-09-05T12:45:00"}

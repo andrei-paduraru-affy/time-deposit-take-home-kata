@@ -21,7 +21,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 @SpringBootTest(classes = TimeDepositApplication.class)
 @AutoConfigureMockMvc
-@ActiveProfiles("local")
+@ActiveProfiles({"local", "test"})
 class TimeDepositControllerV1IT {
 
   private static final String BALANCE_UPDATES_PATH = "/api/v1/time-deposits/balance-updates";

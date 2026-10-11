@@ -15,7 +15,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 @SpringBootTest(classes = TimeDepositApplication.class)
 @AutoConfigureMockMvc
-@ActiveProfiles("local")
+@ActiveProfiles({"local", "test"})
 class OpenApiContractIT {
 
   @Autowired private MockMvc mockMvc;

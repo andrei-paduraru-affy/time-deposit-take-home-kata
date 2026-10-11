@@ -61,6 +61,9 @@ mvn -q verify          # + integration tests, *IT classes via Failsafe (Testcont
 - SOLID, small classes, intention-revealing names, no dead code, no commented-out code, no commented properties, no commented dependencies.
 - Use `BigDecimal` for new money code, but convert at the boundary so `updateBalance` behaviour stays identical.
 - Where the brief is ambiguous, ask and do not make assumptions without approval.
+- Seed data lives in Liquibase changesets with `contextFilter: seed`. Integration tests must activate the `test` profile
+  (`@ActiveProfiles({"local", "test"})`), whose `spring.liquibase.contexts=!seed` keeps seed data out of tests; tests
+  create their own data.
 - Tests: JUnit 5 + AssertJ. Unit tests for domain logic; Testcontainers (PostgreSQL) for persistence and API
   integration tests. Test names describe behaviour (`shouldNotApplyInterestToStudentPlanAfterOneYear`).
 

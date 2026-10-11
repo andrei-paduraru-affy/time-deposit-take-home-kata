@@ -5,3 +5,6 @@ databaseChangeLog:
   - include:
       file: changes/002-cascade-delete-withdrawals-with-time-deposit.yaml
       relativeToChangelogFile: true
+  - include:
+      file: changes/003-seed-time-deposits-and-withdrawals.yaml
+      relativeToChangelogFile: true

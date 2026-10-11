@@ -18,7 +18,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest(classes = TimeDepositApplication.class)
-@ActiveProfiles("local")
+@ActiveProfiles({"local", "test"})
 @Transactional
 class TimeDepositPersistenceAdapterIT {
 
