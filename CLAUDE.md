@@ -43,9 +43,13 @@ mvn -q verify          # + integration tests, *IT classes via Failsafe (Testcont
   - `application` — use cases and port interfaces (inbound + outbound).
   - `adapter.in.web` — REST controllers generated from / conforming to the OpenAPI contract.
   - `adapter.out.persistence` — JPA/JDBC entities and repositories; map to/from domain objects.
-  - `config` — Spring wiring and environment setup; `bootstrap` — the Spring Boot entry point. Nothing else depends on them.
+  - `config` — Spring wiring and environment setup; nothing else depends on it. The Spring Boot entry point
+    `TimeDepositApplication` sits in the root package (standard Spring layout) and is the only Spring class allowed there.
 - Dependencies point inward only. The domain must not depend on Spring, JPA or web types.
-- **Contract-first OpenAPI**: the spec is the source of truth for the API; keep it in sync with the code.
+- **Contract-first OpenAPI**: `java/src/main/resources/static/openapi/time-deposit-api.yaml` is the source of truth.
+  `openapi-generator-maven-plugin` generates the API interfaces (`adapter.in.web.api`) on every build; controllers
+  implement them (`*ControllerV1`, paths under `/api/v1`). Change the YAML first, never the generated code.
+  Swagger UI (`/swagger-ui.html`) displays this file.
 - Interest calculation must be extensible: one strategy per plan type (Strategy pattern), with the shared 30-day
   grace period in a Template Method base class. Adding a plan means a new strategy class plus one `case` in
   `TimeDepositCalculator`'s plan-type switch.

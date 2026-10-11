@@ -1,4 +1,4 @@
-package org.ikigaidigital.bootstrap;
+package org.ikigaidigital;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

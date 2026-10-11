@@ -1,4 +1,4 @@
-package org.ikigaidigital.adapter.out.persistence;
+package org.ikigaidigital.adapter.out.persistence.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,8 +12,7 @@ import java.math.BigDecimal;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.ikigaidigital.adapter.out.persistence.enums.PlanType;
+import org.ikigaidigital.adapter.out.persistence.entity.enums.PlanType;
 
 @Entity
 @Table(name = "time_deposits")
@@ -32,7 +31,6 @@ public class TimeDepositEntity {
   @Column(nullable = false)
   private int days;
 
-  @Setter
   @Column(nullable = false, precision = 19, scale = 2)
   private BigDecimal balance;
 

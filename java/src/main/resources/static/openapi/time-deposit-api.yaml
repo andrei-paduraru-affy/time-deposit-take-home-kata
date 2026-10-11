@@ -1,0 +1,29 @@
+openapi: 3.0.3
+info:
+  title: XA Bank Time Deposit API
+  description: Applies monthly interest to time deposit balances according to their plan.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+    description: Local
+tags:
+  - name: Time Deposits
+    description: Time deposit operations
+paths:
+  /api/v1/time-deposits/balance-updates:
+    post:
+      tags:
+        - Time Deposits
+      operationId: updateAllBalances
+      summary: Apply one month of interest to every time deposit
+      description: |
+        Loads every time deposit and adds one month of interest to its balance, based on its plan:
+        - **basic**: 1% per year
+        - **student**: 3% per year, no interest after 365 days
+        - **premium**: 5% per year, interest starts after 45 days
+
+        No plan earns interest during the first 30 days. Interest is rounded half-up to two decimals.
+        Each call applies interest again; the call is not idempotent.
+      responses:
+        '204':
+          description: All balances were updated.

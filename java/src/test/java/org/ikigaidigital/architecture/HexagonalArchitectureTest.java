@@ -1,5 +1,7 @@
 package org.ikigaidigital.architecture;
 
+import static com.tngtech.archunit.base.DescribedPredicate.alwaysTrue;
+import static com.tngtech.archunit.core.domain.JavaClass.Predicates.resideInAnyPackage;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 import static com.tngtech.archunit.library.Architectures.onionArchitecture;
 
@@ -7,6 +9,7 @@ import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.core.importer.ImportOption;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 class HexagonalArchitectureTest {
 
@@ -17,7 +20,6 @@ class HexagonalArchitectureTest {
   private static final String WEB_ADAPTER = ROOT + ".adapter.in.web..";
   private static final String PERSISTENCE_ADAPTER = ROOT + ".adapter.out.persistence..";
   private static final String CONFIG = ROOT + ".config..";
-  private static final String BOOTSTRAP = ROOT + ".bootstrap..";
 
   private static final JavaClasses CLASSES =
       new ClassFileImporter()
@@ -32,6 +34,7 @@ class HexagonalArchitectureTest {
         .adapter("web", WEB_ADAPTER)
         .adapter("persistence", PERSISTENCE_ADAPTER)
         .withOptionalLayers(true)
+        .ignoreDependency(resideInAnyPackage(CONFIG), alwaysTrue())
         .check(CLASSES);
   }
 
@@ -40,6 +43,8 @@ class HexagonalArchitectureTest {
     noClasses()
         .that()
         .resideInAnyPackage(SHARED_DOMAIN, DOMAIN)
+        .and()
+        .areNotAnnotatedWith(SpringBootApplication.class)
         .should()
         .dependOnClassesThat()
         .resideInAnyPackage(
@@ -53,13 +58,13 @@ class HexagonalArchitectureTest {
   }
 
   @Test
-  void onlyBootstrapShouldDependOnConfiguration() {
+  void noClassShouldDependOnConfiguration() {
     noClasses()
         .that()
-        .resideOutsideOfPackages(CONFIG, BOOTSTRAP)
+        .resideOutsideOfPackage(CONFIG)
         .should()
         .dependOnClassesThat()
-        .resideInAnyPackage(CONFIG, BOOTSTRAP)
+        .resideInAPackage(CONFIG)
         .check(CLASSES);
   }
 }
