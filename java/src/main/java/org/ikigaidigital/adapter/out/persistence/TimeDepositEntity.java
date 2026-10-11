@@ -13,6 +13,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.ikigaidigital.adapter.out.persistence.enums.PlanType;
 
 @Entity
 @Table(name = "time_deposits")

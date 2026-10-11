@@ -37,14 +37,18 @@ mvn -q verify          # + integration tests, *IT classes via Failsafe (Testcont
 ## Architecture
 
 - **Hexagonal (ports & adapters)**:
-  - `domain` — pure Java, no framework imports. Holds `TimeDeposit`, interest rules, domain services.
+  - Domain — pure Java, no framework imports. The shared `TimeDeposit` and `TimeDepositCalculator` stay in the root
+    package `org.ikigaidigital` (moving them would break consumers); new domain code goes in `domain.*`
+    (e.g. `domain.interest` for the interest strategies).
   - `application` — use cases and port interfaces (inbound + outbound).
   - `adapter.in.web` — REST controllers generated from / conforming to the OpenAPI contract.
   - `adapter.out.persistence` — JPA/JDBC entities and repositories; map to/from domain objects.
+  - `config` — Spring wiring and environment setup; `bootstrap` — the Spring Boot entry point. Nothing else depends on them.
 - Dependencies point inward only. The domain must not depend on Spring, JPA or web types.
 - **Contract-first OpenAPI**: the spec is the source of truth for the API; keep it in sync with the code.
-- Interest calculation must be extensible: one strategy per plan type (Strategy pattern / registry), so a new plan
-  means adding a class, not editing a conditional (Open/Closed).
+- Interest calculation must be extensible: one strategy per plan type (Strategy pattern), with the shared 30-day
+  grace period in a Template Method base class. Adding a plan means a new strategy class plus one `case` in
+  `TimeDepositCalculator`'s plan-type switch.
 
 ## Coding conventions
 

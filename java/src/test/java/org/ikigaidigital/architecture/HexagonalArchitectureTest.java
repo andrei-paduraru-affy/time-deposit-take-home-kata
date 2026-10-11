@@ -11,7 +11,8 @@ import org.junit.jupiter.api.Test;
 class HexagonalArchitectureTest {
 
   private static final String ROOT = "org.ikigaidigital";
-  private static final String DOMAIN = ROOT;
+  private static final String SHARED_DOMAIN = ROOT;
+  private static final String DOMAIN = ROOT + ".domain..";
   private static final String APPLICATION = ROOT + ".application..";
   private static final String WEB_ADAPTER = ROOT + ".adapter.in.web..";
   private static final String PERSISTENCE_ADAPTER = ROOT + ".adapter.out.persistence..";
@@ -26,7 +27,7 @@ class HexagonalArchitectureTest {
   @Test
   void shouldFollowPortsAndAdaptersLayering() {
     onionArchitecture()
-        .domainModels(DOMAIN)
+        .domainModels(SHARED_DOMAIN, DOMAIN)
         .applicationServices(APPLICATION)
         .adapter("web", WEB_ADAPTER)
         .adapter("persistence", PERSISTENCE_ADAPTER)
@@ -38,7 +39,7 @@ class HexagonalArchitectureTest {
   void domainShouldNotDependOnFrameworks() {
     noClasses()
         .that()
-        .resideInAPackage(DOMAIN)
+        .resideInAnyPackage(SHARED_DOMAIN, DOMAIN)
         .should()
         .dependOnClassesThat()
         .resideInAnyPackage(
