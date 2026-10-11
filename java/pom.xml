@@ -152,6 +152,7 @@
                                 <useTags>true</useTags>
                                 <useSpringBoot3>true</useSpringBoot3>
                                 <useBeanValidation>false</useBeanValidation>
+                                <dateLibrary>java8-localdatetime</dateLibrary>
                                 <openApiNullable>false</openApiNullable>
                                 <documentationProvider>none</documentationProvider>
                                 <annotationLibrary>none</annotationLibrary>

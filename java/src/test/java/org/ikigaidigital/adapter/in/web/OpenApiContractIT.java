@@ -31,6 +31,16 @@ class OpenApiContractIT {
   }
 
   @Test
+  void shouldDescribeGetAllTimeDepositsOperationAndItsResponseSchemas() throws Exception {
+    mockMvc
+        .perform(get("/openapi/time-deposit-api.yaml"))
+        .andExpect(status().isOk())
+        .andExpect(content().string(containsString("operationId: getAllTimeDeposits")))
+        .andExpect(content().string(containsString("TimeDepositResponse:")))
+        .andExpect(content().string(containsString("WithdrawalResponse:")));
+  }
+
+  @Test
   void shouldServeSwaggerUiConfiguredWithTheContract() throws Exception {
     mockMvc.perform(get("/swagger-ui/index.html")).andExpect(status().isOk());
     mockMvc

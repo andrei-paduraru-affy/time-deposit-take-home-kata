@@ -5,9 +5,15 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
 import org.ikigaidigital.TimeDeposit;
 import org.ikigaidigital.adapter.out.persistence.entity.TimeDepositEntity;
+import org.ikigaidigital.adapter.out.persistence.entity.WithdrawalEntity;
 import org.ikigaidigital.adapter.out.persistence.entity.enums.PlanType;
+import org.ikigaidigital.domain.TimeDepositDetails;
+import org.ikigaidigital.domain.Withdrawal;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
@@ -38,5 +44,49 @@ class TimeDepositEntityMapperTest {
     var timeDeposit = new TimeDeposit(1, "basic", balance, 31);
 
     assertThat(mapper.mapToBalance(timeDeposit)).isEqualTo(new BigDecimal(expected));
+  }
+
+  @Test
+  void shouldMapEntityToDetailsWithWithdrawalsOrderedByDate() {
+    var entity = timeDepositEntity();
+    var earlier = LocalDateTime.of(2026, 6, 1, 10, 0);
+    var later = LocalDateTime.of(2026, 9, 1, 10, 0);
+    var laterWithdrawal = withdrawalEntity(2, "20.00", later);
+    var earlierWithdrawal = withdrawalEntity(1, "10.00", earlier);
+    when(entity.getWithdrawals()).thenReturn(List.of(laterWithdrawal, earlierWithdrawal));
+
+    TimeDepositDetails details = mapper.mapToTimeDepositDetails(entity);
+
+    assertThat(details.timeDeposit().getId()).isEqualTo(7);
+    assertThat(details.timeDeposit().getPlanType()).isEqualTo("student");
+    assertThat(details.withdrawals())
+        .containsExactly(
+            new Withdrawal(1, new BigDecimal("10.00"), earlier),
+            new Withdrawal(2, new BigDecimal("20.00"), later));
+  }
+
+  @Test
+  void shouldMapEntityWithoutWithdrawalsToDetailsWithEmptyList() {
+    var entity = timeDepositEntity();
+    when(entity.getWithdrawals()).thenReturn(List.of());
+
+    assertThat(mapper.mapToTimeDepositDetails(entity).withdrawals()).isEmpty();
+  }
+
+  private TimeDepositEntity timeDepositEntity() {
+    var entity = mock(TimeDepositEntity.class);
+    when(entity.getId()).thenReturn(7);
+    when(entity.getPlanType()).thenReturn(PlanType.STUDENT);
+    when(entity.getBalance()).thenReturn(new BigDecimal("500.00"));
+    when(entity.getDays()).thenReturn(29);
+    return entity;
+  }
+
+  private WithdrawalEntity withdrawalEntity(int id, String amount, LocalDateTime date) {
+    var entity = mock(WithdrawalEntity.class);
+    when(entity.getId()).thenReturn(id);
+    when(entity.getAmount()).thenReturn(new BigDecimal(amount));
+    when(entity.getDate()).thenReturn(date);
+    return entity;
   }
 }

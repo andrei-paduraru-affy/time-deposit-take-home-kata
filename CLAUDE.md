@@ -59,6 +59,10 @@ mvn -q verify          # + integration tests, *IT classes via Failsafe (Testcont
 - Formatting: Google Java Style, applied automatically by Spotless (google-java-format) on every Maven build;
   run `mvn spotless:apply` to format without building. Never hand-format against it.
 - SOLID, small classes, intention-revealing names, no dead code, no commented-out code, no commented properties, no commented dependencies.
+- Time: timestamps are `LocalDateTime` (stored in `TIMESTAMP` columns exactly as written). Whenever a zone is involved,
+  use `ZoneOffset.UTC` explicitly: `LocalDateTime.now(ZoneOffset.UTC)`, `LocalDateTime.ofInstant(instant, ZoneOffset.UTC)`,
+  `localDateTime.toInstant(ZoneOffset.UTC)`. The zone-less `LocalDateTime.now()` is forbidden (ArchUnit enforces it), and
+  `hibernate.jdbc.time_zone` must stay unset: it shifted values whenever the JVM zone was not UTC.
 - Use `BigDecimal` for new money code, but convert at the boundary so `updateBalance` behaviour stays identical.
 - Where the brief is ambiguous, ask and do not make assumptions without approval.
 - Seed data lives in Liquibase changesets with `contextFilter: seed`. Integration tests must activate the `test` profile

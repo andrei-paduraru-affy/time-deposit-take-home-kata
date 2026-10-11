@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: XA Bank Time Deposit API
-  description: Applies monthly interest to time deposit balances according to their plan.
+  description: Lists time deposits with their withdrawals and applies monthly interest to their balances according to their plan.
   version: 1.0.0
 servers:
   - url: http://localhost:8080
@@ -10,6 +10,24 @@ tags:
   - name: Time Deposits
     description: Time deposit operations
 paths:
+  /api/v1/time-deposits:
+    get:
+      tags:
+        - Time Deposits
+      operationId: getAllTimeDeposits
+      summary: Retrieve all time deposits
+      description: |
+        Returns every time deposit together with its withdrawals, ordered by deposit id.
+        Withdrawals of a deposit are ordered by date.
+      responses:
+        '200':
+          description: The list of all time deposits. Empty when there are none.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TimeDepositResponse'
   /api/v1/time-deposits/balance-updates:
     post:
       tags:
@@ -27,3 +45,62 @@ paths:
       responses:
         '204':
           description: All balances were updated.
+components:
+  schemas:
+    TimeDepositResponse:
+      type: object
+      required:
+        - id
+        - planType
+        - balance
+        - days
+        - withdrawals
+      properties:
+        id:
+          type: integer
+          format: int32
+          description: Time deposit identifier.
+          example: 1
+        planType:
+          type: string
+          description: Plan that determines how interest is calculated.
+          enum:
+            - basic
+            - student
+            - premium
+          example: premium
+        balance:
+          type: number
+          description: Current balance, with two decimals.
+          example: 12000.00
+        days:
+          type: integer
+          format: int32
+          description: Number of days since the deposit was opened.
+          example: 90
+        withdrawals:
+          type: array
+          description: Withdrawals made from this deposit, oldest first.
+          items:
+            $ref: '#/components/schemas/WithdrawalResponse'
+    WithdrawalResponse:
+      type: object
+      required:
+        - id
+        - amount
+        - date
+      properties:
+        id:
+          type: integer
+          format: int32
+          description: Withdrawal identifier.
+          example: 7
+        amount:
+          type: number
+          description: Amount withdrawn, with two decimals.
+          example: 250.75
+        date:
+          type: string
+          format: date-time
+          description: When the withdrawal was made.
+          example: '2026-08-30T15:10:00'
