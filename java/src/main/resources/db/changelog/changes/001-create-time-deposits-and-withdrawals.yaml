@@ -1,0 +1,63 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-create-time-deposits
+      author: andrei.paduraru
+      changes:
+        - createTable:
+            tableName: time_deposits
+            columns:
+              - column:
+                  name: id
+                  type: INT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: plan_type
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: days
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: balance
+                  type: NUMERIC(19, 2)
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 001-create-withdrawals
+      author: andrei.paduraru
+      changes:
+        - createTable:
+            tableName: withdrawals
+            columns:
+              - column:
+                  name: id
+                  type: INT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: time_deposit_id
+                  type: INT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_withdrawals_time_deposit
+                    referencedTableName: time_deposits
+                    referencedColumnNames: id
+              - column:
+                  name: amount
+                  type: NUMERIC(19, 2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: date
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false

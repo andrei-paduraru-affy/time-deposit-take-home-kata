@@ -1,0 +1,4 @@
+databaseChangeLog:
+  - include:
+      file: changes/001-create-time-deposits-and-withdrawals.yaml
+      relativeToChangelogFile: true
