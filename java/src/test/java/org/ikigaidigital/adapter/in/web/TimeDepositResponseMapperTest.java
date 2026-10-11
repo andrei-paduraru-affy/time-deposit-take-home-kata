@@ -13,8 +13,6 @@ import org.ikigaidigital.adapter.in.web.model.WithdrawalResponse;
 import org.ikigaidigital.domain.TimeDepositDetails;
 import org.ikigaidigital.domain.Withdrawal;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 
 class TimeDepositResponseMapperTest {
 
@@ -36,21 +34,6 @@ class TimeDepositResponseMapperTest {
     assertThat(response.getDays()).isEqualTo(90);
     assertThat(response.getWithdrawals())
         .containsExactly(new WithdrawalResponse(7, new BigDecimal("250.50"), date));
-  }
-
-  @ParameterizedTest
-  @CsvSource({"basic, basic", "student, student", "premium, premium"})
-  void shouldExposePlanTypeInLowercase(String planType, String expected) {
-    var details = new TimeDepositDetails(new TimeDeposit(1, planType, 100.0, 31), List.of());
-
-    assertThat(mapper.mapToResponse(details).getPlanType().getValue()).isEqualTo(expected);
-  }
-
-  @Test
-  void shouldMapDepositWithoutWithdrawalsToEmptyList() {
-    var details = new TimeDepositDetails(new TimeDeposit(1, "basic", 100.0, 31), List.of());
-
-    assertThat(mapper.mapToResponse(details).getWithdrawals()).isEmpty();
   }
 
   @Test

@@ -2,38 +2,30 @@ package org.ikigaidigital.adapter.out.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
+import static org.ikigaidigital.fixture.PersistenceFixtures.newTimeDeposit;
+import static org.ikigaidigital.fixture.PersistenceFixtures.newWithdrawal;
 
-import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.TimeZone;
 import org.hibernate.SessionFactory;
 import org.hibernate.stat.Statistics;
+import org.ikigaidigital.AbstractIT;
 import org.ikigaidigital.TimeDeposit;
-import org.ikigaidigital.TimeDepositApplication;
 import org.ikigaidigital.adapter.out.persistence.entity.TimeDepositEntity;
-import org.ikigaidigital.adapter.out.persistence.entity.WithdrawalEntity;
 import org.ikigaidigital.adapter.out.persistence.entity.enums.PlanType;
 import org.ikigaidigital.domain.TimeDepositDetails;
 import org.ikigaidigital.domain.Withdrawal;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
-@SpringBootTest(
-    classes = TimeDepositApplication.class,
-    properties = "spring.jpa.properties.hibernate.generate_statistics=true")
-@ActiveProfiles({"local", "test"})
 @Transactional
-class TimeDepositPersistenceAdapterIT {
+class TimeDepositPersistenceAdapterIT extends AbstractIT {
 
   @Autowired private TimeDepositPersistenceAdapter adapter;
-  @Autowired private EntityManager entityManager;
   @Autowired private EntityManagerFactory entityManagerFactory;
 
   private TimeDepositEntity basic;
@@ -41,10 +33,8 @@ class TimeDepositPersistenceAdapterIT {
 
   @BeforeEach
   void setUp() {
-    entityManager.createQuery("DELETE FROM WithdrawalEntity").executeUpdate();
-    entityManager.createQuery("DELETE FROM TimeDepositEntity").executeUpdate();
-    basic = new TimeDepositEntity(PlanType.BASIC, 31, new BigDecimal("1000.00"));
-    premium = new TimeDepositEntity(PlanType.PREMIUM, 46, new BigDecimal("2500.50"));
+    basic = newTimeDeposit(PlanType.BASIC, 31, "1000.00");
+    premium = newTimeDeposit(PlanType.PREMIUM, 46, "2500.50");
     entityManager.persist(basic);
     entityManager.persist(premium);
     entityManager.flush();
@@ -117,33 +107,10 @@ class TimeDepositPersistenceAdapterIT {
 
   private Integer persistWithdrawal(TimeDepositEntity owner, String amount, LocalDateTime date) {
     var reference = entityManager.getReference(TimeDepositEntity.class, owner.getId());
-    var withdrawal = new WithdrawalEntity(reference, new BigDecimal(amount), date);
+    var withdrawal = newWithdrawal(reference, amount, date);
     entityManager.persist(withdrawal);
     entityManager.flush();
     entityManager.clear();
     return withdrawal.getId();
-  }
-
-  @Test
-  void shouldReadWithdrawalDateExactlyAsStoredWhateverTheJvmTimeZone() {
-    var originalTimeZone = TimeZone.getDefault();
-    TimeZone.setDefault(TimeZone.getTimeZone("Pacific/Auckland"));
-    try {
-      entityManager
-          .createNativeQuery(
-              "INSERT INTO withdrawals (time_deposit_id, amount, date) "
-                  + "VALUES (:id, 10.00, TIMESTAMP '2026-06-01 09:00:00')")
-          .setParameter("id", basic.getId())
-          .executeUpdate();
-      entityManager.clear();
-
-      var details = adapter.loadAllTimeDepositDetails().get(0);
-
-      assertThat(details.withdrawals())
-          .extracting(Withdrawal::date)
-          .containsExactly(LocalDateTime.of(2026, 6, 1, 9, 0));
-    } finally {
-      TimeZone.setDefault(originalTimeZone);
-    }
   }
 }

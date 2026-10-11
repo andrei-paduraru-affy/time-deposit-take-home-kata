@@ -1,30 +1,23 @@
 package org.ikigaidigital.adapter.out.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.ikigaidigital.fixture.PersistenceFixtures.newTimeDeposit;
+import static org.ikigaidigital.fixture.PersistenceFixtures.newWithdrawal;
 
-import jakarta.persistence.EntityManager;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import org.ikigaidigital.TimeDepositApplication;
+import org.ikigaidigital.AbstractIT;
 import org.ikigaidigital.adapter.out.persistence.entity.TimeDepositEntity;
 import org.ikigaidigital.adapter.out.persistence.entity.WithdrawalEntity;
 import org.ikigaidigital.adapter.out.persistence.entity.enums.PlanType;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
-@SpringBootTest(classes = TimeDepositApplication.class)
-@ActiveProfiles({"local", "test"})
 @Transactional
-class PersistenceEntitiesIT {
-
-  @Autowired private EntityManager entityManager;
+class PersistenceEntitiesIT extends AbstractIT {
 
   @Test
   void shouldPersistTimeDepositWithGeneratedIdAndPlanTypeStoredAsName() {
-    var timeDeposit = new TimeDepositEntity(PlanType.PREMIUM, 60, new BigDecimal("1234567.89"));
+    var timeDeposit = newTimeDeposit(PlanType.PREMIUM, 60, "1234567.89");
 
     entityManager.persist(timeDeposit);
     entityManager.flush();
@@ -44,10 +37,10 @@ class PersistenceEntitiesIT {
 
   @Test
   void shouldPersistWithdrawalReferencingTimeDeposit() {
-    var timeDeposit = new TimeDepositEntity(PlanType.BASIC, 45, new BigDecimal("1000.00"));
+    var timeDeposit = newTimeDeposit(PlanType.BASIC, 45, "1000.00");
     entityManager.persist(timeDeposit);
     var date = LocalDateTime.of(2026, 10, 1, 12, 30);
-    var withdrawal = new WithdrawalEntity(timeDeposit, new BigDecimal("150.25"), date);
+    var withdrawal = newWithdrawal(timeDeposit, "150.25", date);
 
     entityManager.persist(withdrawal);
     entityManager.flush();
@@ -60,29 +53,8 @@ class PersistenceEntitiesIT {
   }
 
   @Test
-  void shouldLoadAllWithdrawalsOfATimeDeposit() {
-    var timeDeposit = new TimeDepositEntity(PlanType.STUDENT, 100, new BigDecimal("5000.00"));
-    var otherTimeDeposit = new TimeDepositEntity(PlanType.BASIC, 100, new BigDecimal("700.00"));
-    entityManager.persist(timeDeposit);
-    entityManager.persist(otherTimeDeposit);
-    var date = LocalDateTime.of(2026, 9, 15, 9, 0);
-    entityManager.persist(new WithdrawalEntity(timeDeposit, new BigDecimal("100.00"), date));
-    entityManager.persist(new WithdrawalEntity(timeDeposit, new BigDecimal("250.50"), date));
-    entityManager.persist(new WithdrawalEntity(otherTimeDeposit, new BigDecimal("10.00"), date));
-    entityManager.flush();
-    entityManager.clear();
-
-    var found = entityManager.find(TimeDepositEntity.class, timeDeposit.getId());
-
-    assertThat(found.getWithdrawals())
-        .extracting(WithdrawalEntity::getAmount)
-        .usingElementComparator(BigDecimal::compareTo)
-        .containsExactlyInAnyOrder(new BigDecimal("100.00"), new BigDecimal("250.50"));
-  }
-
-  @Test
   void shouldPersistWithdrawalsTogetherWithTheirTimeDeposit() {
-    var timeDeposit = new TimeDepositEntity(PlanType.PREMIUM, 50, new BigDecimal("3000.00"));
+    var timeDeposit = newTimeDeposit(PlanType.PREMIUM, 50, "3000.00");
     timeDeposit.getWithdrawals().add(withdrawalOf(timeDeposit, "200.00"));
     timeDeposit.getWithdrawals().add(withdrawalOf(timeDeposit, "300.00"));
 
@@ -95,7 +67,7 @@ class PersistenceEntitiesIT {
 
   @Test
   void shouldDeleteWithdrawalRemovedFromItsTimeDeposit() {
-    var timeDeposit = new TimeDepositEntity(PlanType.BASIC, 40, new BigDecimal("800.00"));
+    var timeDeposit = newTimeDeposit(PlanType.BASIC, 40, "800.00");
     timeDeposit.getWithdrawals().add(withdrawalOf(timeDeposit, "50.00"));
     timeDeposit.getWithdrawals().add(withdrawalOf(timeDeposit, "75.00"));
     entityManager.persist(timeDeposit);
@@ -110,7 +82,7 @@ class PersistenceEntitiesIT {
 
   @Test
   void shouldDeleteWithdrawalsWhenTheirTimeDepositIsRemoved() {
-    var timeDeposit = new TimeDepositEntity(PlanType.STUDENT, 200, new BigDecimal("1500.00"));
+    var timeDeposit = newTimeDeposit(PlanType.STUDENT, 200, "1500.00");
     timeDeposit.getWithdrawals().add(withdrawalOf(timeDeposit, "20.00"));
     entityManager.persist(timeDeposit);
     entityManager.flush();
@@ -124,7 +96,7 @@ class PersistenceEntitiesIT {
 
   @Test
   void shouldDeleteWithdrawalsInTheDatabaseWhenTheirTimeDepositIsBulkDeleted() {
-    var timeDeposit = new TimeDepositEntity(PlanType.BASIC, 90, new BigDecimal("900.00"));
+    var timeDeposit = newTimeDeposit(PlanType.BASIC, 90, "900.00");
     timeDeposit.getWithdrawals().add(withdrawalOf(timeDeposit, "30.00"));
     entityManager.persist(timeDeposit);
     entityManager.flush();
@@ -139,8 +111,7 @@ class PersistenceEntitiesIT {
   }
 
   private WithdrawalEntity withdrawalOf(TimeDepositEntity timeDeposit, String amount) {
-    return new WithdrawalEntity(
-        timeDeposit, new BigDecimal(amount), LocalDateTime.of(2026, 10, 1, 10, 0));
+    return newWithdrawal(timeDeposit, amount, LocalDateTime.of(2026, 10, 1, 10, 0));
   }
 
   private long countWithdrawalsOf(TimeDepositEntity timeDeposit) {

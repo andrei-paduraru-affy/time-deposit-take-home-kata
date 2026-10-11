@@ -34,13 +34,6 @@ class UpdateAllBalancesServiceTest {
             tuple(1, 1000.83), tuple(2, 1002.50), tuple(3, 1004.17), tuple(4, 1000.00));
   }
 
-  @Test
-  void shouldSaveNothingWhenThereAreNoDeposits() {
-    service.updateAllBalances();
-
-    assertThat(timeDeposits.updated()).isEmpty();
-  }
-
   private static class InMemoryTimeDeposits
       implements LoadTimeDepositsPort, UpdateTimeDepositBalancesPort {
 

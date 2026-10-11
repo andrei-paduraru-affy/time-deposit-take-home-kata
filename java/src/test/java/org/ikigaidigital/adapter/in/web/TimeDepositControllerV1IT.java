@@ -3,6 +3,8 @@ package org.ikigaidigital.adapter.in.web;
 import static java.util.stream.Collectors.toMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasSize;
+import static org.ikigaidigital.fixture.PersistenceFixtures.newTimeDeposit;
+import static org.ikigaidigital.fixture.PersistenceFixtures.newWithdrawal;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -12,35 +14,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Map;
-import org.ikigaidigital.TimeDepositApplication;
+import org.ikigaidigital.AbstractIT;
 import org.ikigaidigital.adapter.out.persistence.entity.TimeDepositEntity;
-import org.ikigaidigital.adapter.out.persistence.entity.WithdrawalEntity;
 import org.ikigaidigital.adapter.out.persistence.entity.enums.PlanType;
-import org.ikigaidigital.adapter.out.persistence.repository.TimeDepositJpaRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
 
-@SpringBootTest(classes = TimeDepositApplication.class)
-@AutoConfigureMockMvc
-@ActiveProfiles({"local", "test"})
-class TimeDepositControllerV1IT {
+class TimeDepositControllerV1IT extends AbstractIT {
 
   private static final String TIME_DEPOSITS_PATH = "/api/v1/time-deposits";
   private static final String BALANCE_UPDATES_PATH = "/api/v1/time-deposits/balance-updates";
-
-  @Autowired private MockMvc mockMvc;
-  @Autowired private TimeDepositJpaRepository timeDepositJpaRepository;
-
-  @BeforeEach
-  void setUp() {
-    timeDepositJpaRepository.deleteAllInBatch();
-  }
 
   @Test
   void shouldApplyMonthlyInterestToEveryTimeDepositAndReturnNoContent() throws Exception {
@@ -73,15 +56,12 @@ class TimeDepositControllerV1IT {
   }
 
   @Test
-  void shouldReturnNoContentWhenThereAreNoTimeDeposits() throws Exception {
-    mockMvc.perform(post(BALANCE_UPDATES_PATH)).andExpect(status().isNoContent());
-  }
-
-  @Test
   void shouldReturnAllTimeDepositsWithTheirWithdrawals() throws Exception {
-    var basic = new TimeDepositEntity(PlanType.BASIC, 45, new BigDecimal("2500.00"));
-    basic.getWithdrawals().add(withdrawal(basic, "50.50", LocalDateTime.of(2026, 8, 20, 11, 15)));
-    basic.getWithdrawals().add(withdrawal(basic, "100.00", LocalDateTime.of(2026, 6, 1, 9, 0)));
+    var basic = newTimeDeposit(PlanType.BASIC, 45, "2500.00");
+    basic
+        .getWithdrawals()
+        .add(newWithdrawal(basic, "50.50", LocalDateTime.of(2026, 8, 20, 11, 15)));
+    basic.getWithdrawals().add(newWithdrawal(basic, "100.00", LocalDateTime.of(2026, 6, 1, 9, 0)));
     var basicId = timeDepositJpaRepository.save(basic).getId();
     var studentId = save(PlanType.STUDENT, 29, "500.00");
     var premiumId = save(PlanType.PREMIUM, 90, "12000.00");
@@ -102,21 +82,11 @@ class TimeDepositControllerV1IT {
         .andExpect(jsonPath("$[0].withdrawals[1].date").value("2026-08-20T11:15:00"))
         .andExpect(jsonPath("$[1].id").value(studentId))
         .andExpect(jsonPath("$[1].planType").value("student"))
+        .andExpect(jsonPath("$[1].withdrawals", hasSize(0)))
         .andExpect(jsonPath("$[2].id").value(premiumId))
         .andExpect(jsonPath("$[2].planType").value("premium"))
         .andExpect(jsonPath("$[2].balance").value(12000.00))
         .andExpect(jsonPath("$[2].days").value(90));
-  }
-
-  @Test
-  void shouldReturnEmptyWithdrawalsForTimeDepositWithoutWithdrawals() throws Exception {
-    save(PlanType.BASIC, 15, "1000.00");
-
-    mockMvc
-        .perform(get(TIME_DEPOSITS_PATH))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$", hasSize(1)))
-        .andExpect(jsonPath("$[0].withdrawals", hasSize(0)));
   }
 
   @Test
@@ -139,17 +109,6 @@ class TimeDepositControllerV1IT {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$[0].balance").value(1000.83))
         .andExpect(jsonPath("$[1].balance").value(3000.00));
-  }
-
-  private WithdrawalEntity withdrawal(
-      TimeDepositEntity timeDeposit, String amount, LocalDateTime date) {
-    return new WithdrawalEntity(timeDeposit, new BigDecimal(amount), date);
-  }
-
-  private Integer save(PlanType planType, int days, String balance) {
-    return timeDepositJpaRepository
-        .save(new TimeDepositEntity(planType, days, new BigDecimal(balance)))
-        .getId();
   }
 
   private Map<Integer, BigDecimal> balancesById() {

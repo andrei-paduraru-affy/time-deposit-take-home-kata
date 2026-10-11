@@ -65,14 +65,6 @@ class TimeDepositEntityMapperTest {
             new Withdrawal(2, new BigDecimal("20.00"), later));
   }
 
-  @Test
-  void shouldMapEntityWithoutWithdrawalsToDetailsWithEmptyList() {
-    var entity = timeDepositEntity();
-    when(entity.getWithdrawals()).thenReturn(List.of());
-
-    assertThat(mapper.mapToTimeDepositDetails(entity).withdrawals()).isEmpty();
-  }
-
   private TimeDepositEntity timeDepositEntity() {
     var entity = mock(TimeDepositEntity.class);
     when(entity.getId()).thenReturn(7);

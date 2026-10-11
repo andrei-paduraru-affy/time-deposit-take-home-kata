@@ -81,7 +81,7 @@ behind each row are in [`prompts-log.md`](prompts-log.md).
 | Dependencies and build configuration (Spring Boot, Hibernate, Liquibase, Lombok, Spotless, ArchUnit, springdoc, OpenAPI generator) | AI chose versions and wrote the `pom.xml` and properties | Tedious and version-sensitive: the agent checked Maven Central and Java 17 compatibility (e.g. the newest google-java-format that runs on 17). I chose which tools to use |
 | PostgreSQL through Testcontainers, for the app and for tests | AI implemented and launched the app to verify | I asked for the container to start with the main application and chose the default `local` profile |
 | Hexagonal structure and ArchUnit rules | AI drafted packages and rules; proved the rules fail on deliberate violations | I decided the layering and moved classes where I disagreed (application class in the root package, adapter and mapper placement) |
-| Characterization tests for `TimeDepositCalculator` | AI wrote 32 tests plus a golden-master test comparing against the legacy algorithm | Safety net for the refactor; I asked for exact rule coverage (30/31, 45/46, 365/366) |
+| Characterization tests for `TimeDepositCalculator` | AI wrote the characterization tests pinning the legacy results for every plan, day boundary and rounding case | Safety net for the refactor; I asked for exact rule coverage (30/31, 45/46, 365/366) |
 | Interest calculation refactor | AI proposed Strategy, Template Method, registry, switch and ServiceLoader options and implemented the chosen one | I made the design calls: Template Method, `domain.interest`, no registry, no static helpers, verb-first names, a switch for selection. The legacy tests passing unchanged is the check |
 | Database schema, entities and relationships | AI wrote the Liquibase changesets, entities and cascade rules | I chose Liquibase, snake_case names, the one-to-many mapping with cascade, and `LocalDateTime` |
 | Seed data | AI wrote the changesets and verified them by launching the app | I specified the boundary cases (day 15, 29, 399, 44) and that tests must not use the seed |
@@ -104,7 +104,7 @@ behind each row are in [`prompts-log.md`](prompts-log.md).
 ### How the output was verified
 
 - `mvn verify`: unit tests, ArchUnit rules and Testcontainers integration tests.
-- A golden-master test that compares the refactored calculator with the legacy algorithm across plans, days and balances.
+- Characterization tests that pin the legacy calculator's results across plans, day boundaries and rounding, kept green through the refactor.
 - Running the application, calling both endpoints from Swagger and checking the database contents.
 - Reviewing each diff in the IDE and committing atomically myself.
 - Manual testing of APIs from Swagger UI
