@@ -8,7 +8,7 @@ I wasn't sure what was meant by shared classes, so I left them at root level and
 
 I assumed everytime POST for updating balance is called, the interest is calculated for 1 month.
 
-
+For updating balance, I considered - all or nothing - to respect the entities described in the requirements. If one fails, the whole operation fails.
 
 ### Prerequisites
 - Java 17 or newer
