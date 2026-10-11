@@ -48,6 +48,8 @@ mvn -q verify          # + integration tests, *IT classes via Failsafe (Testcont
 
 ## Coding conventions
 
+- Formatting: Google Java Style, applied automatically by Spotless (google-java-format) on every Maven build;
+  run `mvn spotless:apply` to format without building. Never hand-format against it.
 - SOLID, small classes, intention-revealing names, no dead code, no commented-out code, no commented properties, no commented dependencies.
 - Use `BigDecimal` for new money code, but convert at the boundary so `updateBalance` behaviour stays identical.
 - Where the brief is ambiguous, ask and do not make assumptions without approval.
