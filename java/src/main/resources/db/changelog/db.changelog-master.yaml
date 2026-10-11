@@ -2,3 +2,6 @@ databaseChangeLog:
   - include:
       file: changes/001-create-time-deposits-and-withdrawals.yaml
       relativeToChangelogFile: true
+  - include:
+      file: changes/002-cascade-delete-withdrawals-with-time-deposit.yaml
+      relativeToChangelogFile: true

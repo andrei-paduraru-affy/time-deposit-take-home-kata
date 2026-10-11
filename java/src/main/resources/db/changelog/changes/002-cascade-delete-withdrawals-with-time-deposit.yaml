@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002-cascade-delete-withdrawals-with-time-deposit
+      author: andrei.paduraru
+      changes:
+        - dropForeignKeyConstraint:
+            baseTableName: withdrawals
+            constraintName: fk_withdrawals_time_deposit
+        - addForeignKeyConstraint:
+            baseTableName: withdrawals
+            baseColumnNames: time_deposit_id
+            referencedTableName: time_deposits
+            referencedColumnNames: id
+            constraintName: fk_withdrawals_time_deposit
+            onDelete: CASCADE
