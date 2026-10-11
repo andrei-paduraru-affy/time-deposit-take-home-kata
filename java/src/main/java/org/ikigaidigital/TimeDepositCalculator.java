@@ -5,6 +5,7 @@ import java.math.RoundingMode;
 import java.util.List;
 
 public class TimeDepositCalculator {
+
   public void updateBalance(List<TimeDeposit> xs) {
     for (int i = 0; i < xs.size(); i++) {
       double interest = 0;
